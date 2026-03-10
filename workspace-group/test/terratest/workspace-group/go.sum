@@ -1,0 +1,2 @@
+// go.sum will be populated by running `go mod tidy`
+// This is a placeholder for the module dependency checksums.

@@ -1,0 +1,22 @@
+Workspace Group Member Module - Notes
+======================================
+
+This module assigns users and service principals as members of Databricks groups.
+
+Two assignment modes:
+  1. Name-based: provide group_names + user_names + membership_assignments
+     (uses data sources to resolve IDs automatically)
+  2. Direct ID-based: provide direct_members with explicit group_id + member_id
+
+Provider requirement:
+  - Workspace-level Databricks provider
+
+Prerequisites:
+  - Groups must exist (created by workspace-group module)
+  - Users/SPs must exist in the workspace
+
+Related modules:
+  - workspace-group: creates the groups
+  - workspace-role-assignment: assigns groups to workspace (USER/ADMIN)
+  - workspace-entitlements: manages workspace capabilities per group
+  - workspace-permissions: manages object-level permissions per group

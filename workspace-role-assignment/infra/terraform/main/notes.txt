@@ -1,0 +1,28 @@
+Workspace Role Assignment Module - Notes
+=========================================
+
+This module assigns principals to a Databricks workspace at the ACCOUNT level.
+It uses databricks_mws_permission_assignment to grant USER or ADMIN roles.
+
+Key difference from entitlements and permissions:
+  - Role Assignment: "Can this principal access this workspace?" (account-level)
+  - Entitlements: "What capabilities does this principal have?" (workspace-level)
+  - Permissions: "What can this principal do with this object?" (object-level)
+
+Provider requirement:
+  - ACCOUNT-LEVEL Databricks provider (not workspace-level)
+  - Requires account admin credentials or OAuth with account scope
+
+Supported role types:
+  - USER: basic workspace access
+  - ADMIN: full workspace administration
+
+Best practice:
+  - Always assign groups, not individual users
+  - Use workspace-group module to create groups first
+
+Related modules:
+  - workspace-group: creates the groups
+  - workspace-group-member: assigns users to groups
+  - workspace-entitlements: manages workspace capabilities per group
+  - workspace-permissions: manages object-level permissions per group

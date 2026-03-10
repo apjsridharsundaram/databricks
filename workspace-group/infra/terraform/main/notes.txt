@@ -1,0 +1,25 @@
+Workspace Group Module - Notes
+===============================
+
+This module creates Databricks workspace-level groups for persona-based RBAC.
+
+Default groups created:
+  - workspace-admins
+  - data-engineers
+  - data-analysts
+  - data-scientists
+
+To add more groups, set the `additional_groups` variable in your .auto.tfvars file.
+
+Provider requirement:
+  - Workspace-level Databricks provider (not account-level)
+
+State management:
+  - terraform.tfstate is managed via the configured backend (S3 recommended)
+  - Do NOT commit terraform.tfstate or terraform.tfstate.backup to version control
+
+Related modules:
+  - workspace-group-member: assigns users/SPs to groups
+  - workspace-role-assignment: assigns groups to workspace (USER/ADMIN)
+  - workspace-entitlements: manages workspace capabilities per group
+  - workspace-permissions: manages object-level permissions per group
