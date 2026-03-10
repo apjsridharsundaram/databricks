@@ -6,7 +6,7 @@
 data "databricks_group" "target_groups" {
   provider = databricks.workspace
 
-  for_each     = toset(var.group_names)
+  for_each     = toset(concat(var.group_names, [for m in var.membership_assignments : m.group_name]))
   display_name = each.value
 }
 
@@ -14,6 +14,6 @@ data "databricks_group" "target_groups" {
 data "databricks_user" "target_users" {
   provider = databricks.workspace
 
-  for_each  = toset(var.user_names)
+  for_each  = toset(concat(var.user_names, [for m in var.membership_assignments : m.user_name]))
   user_name = each.value
 }

@@ -7,7 +7,7 @@
 # databricks_account_id    = "<account-id>"
 # databricks_account_token = "<token>"
 
-workspace_id = ""
+# workspace_id = "<workspace-id>"
 
 group_role_assignments = [
   # {
