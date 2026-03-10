@@ -2,6 +2,7 @@ package test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func TestWorkspaceGroup(t *testing.T) {
 
 		// Retry up to 3 times on known Databricks API errors
 		MaxRetries:         3,
-		TimeBetweenRetries: 5,
+		TimeBetweenRetries: 5 * time.Second,
 	}
 
 	defer terraform.Destroy(t, terraformOptions)

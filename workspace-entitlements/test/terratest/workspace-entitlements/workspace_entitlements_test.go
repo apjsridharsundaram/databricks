@@ -2,6 +2,7 @@ package test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,7 @@ func TestWorkspaceEntitlements(t *testing.T) {
 		},
 
 		MaxRetries:         3,
-		TimeBetweenRetries: 5,
+		TimeBetweenRetries: 5 * time.Second,
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
