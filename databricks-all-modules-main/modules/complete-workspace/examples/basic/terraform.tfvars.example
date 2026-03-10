@@ -1,0 +1,8 @@
+# Example terraform.tfvars file
+# Copy this to terraform.tfvars and fill in your values
+
+databricks_account_id = "your-databricks-account-id"
+workspace_name        = "my-workspace"
+aws_region            = "us-west-2"
+
+

@@ -1,0 +1,101 @@
+# =============================================================================
+# CI/CD Pipeline Configuration
+# Workspace Authorization Modules - Databricks Platform Engineering
+# =============================================================================
+
+name: databricks-workspace-authorization
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - databricks-all-modules-main/modules/workspace-group/**
+      - databricks-all-modules-main/modules/workspace-group-member/**
+      - databricks-all-modules-main/modules/workspace-role-assignment/**
+      - databricks-all-modules-main/modules/workspace-entitlements/**
+      - databricks-all-modules-main/modules/workspace-permissions/**
+      - infra/terraform/main/**
+      - test/terratest/**
+
+stages:
+  # --------------------------------------------------------------------------
+  # Stage 1: Validate
+  # --------------------------------------------------------------------------
+  - stage: validate
+    displayName: "Terraform Validate"
+    jobs:
+      - job: fmt_check
+        displayName: "Terraform Format Check"
+        steps:
+          - script: |
+              terraform fmt -check -recursive databricks-all-modules-main/modules/workspace-group
+              terraform fmt -check -recursive databricks-all-modules-main/modules/workspace-group-member
+              terraform fmt -check -recursive databricks-all-modules-main/modules/workspace-role-assignment
+              terraform fmt -check -recursive databricks-all-modules-main/modules/workspace-entitlements
+              terraform fmt -check -recursive databricks-all-modules-main/modules/workspace-permissions
+
+      - job: validate_modules
+        displayName: "Terraform Validate Modules"
+        strategy:
+          matrix:
+            workspace-group:
+              MODULE_PATH: databricks-all-modules-main/modules/workspace-group
+            workspace-group-member:
+              MODULE_PATH: databricks-all-modules-main/modules/workspace-group-member
+            workspace-role-assignment:
+              MODULE_PATH: databricks-all-modules-main/modules/workspace-role-assignment
+            workspace-entitlements:
+              MODULE_PATH: databricks-all-modules-main/modules/workspace-entitlements
+            workspace-permissions:
+              MODULE_PATH: databricks-all-modules-main/modules/workspace-permissions
+        steps:
+          - script: |
+              cd $(MODULE_PATH)
+              terraform init -backend=false
+              terraform validate
+
+  # --------------------------------------------------------------------------
+  # Stage 2: Terratest (integration tests)
+  # --------------------------------------------------------------------------
+  - stage: test
+    displayName: "Terratest"
+    dependsOn: validate
+    condition: succeeded()
+    jobs:
+      - job: terratest
+        displayName: "Run Terratest"
+        strategy:
+          matrix:
+            workspace-group:
+              TEST_PATH: test/terratest/workspace-group
+            workspace-group-member:
+              TEST_PATH: test/terratest/workspace-group-member
+            workspace-role-assignment:
+              TEST_PATH: test/terratest/workspace-role-assignment
+            workspace-entitlements:
+              TEST_PATH: test/terratest/workspace-entitlements
+            workspace-permissions:
+              TEST_PATH: test/terratest/workspace-permissions
+        steps:
+          - script: |
+              cd $(TEST_PATH)
+              go test -v -timeout 30m
+
+  # --------------------------------------------------------------------------
+  # Stage 3: Plan (for main branch)
+  # --------------------------------------------------------------------------
+  - stage: plan
+    displayName: "Terraform Plan"
+    dependsOn: test
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: plan
+        displayName: "Terraform Plan"
+        steps:
+          - script: |
+              cd infra/terraform/main/aws-SE-99d097-databricks/us-east-1
+              terraform init
+              terraform plan -out=tfplan
