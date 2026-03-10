@@ -1,0 +1,36 @@
+Workspace Permissions Module - Notes
+=====================================
+
+This module manages object-level access control (ACLs) on workspace resources.
+
+Supported resource types:
+  - Cluster (cluster_id)
+  - Cluster Policy (cluster_policy_id)
+  - Directory (directory_path or directory_id)
+  - Experiment (experiment_id)
+  - Instance Pool (instance_pool_id)
+  - Job (job_id)
+  - Notebook (notebook_path or notebook_id)
+  - Pipeline (pipeline_id)
+  - Registered Model (registered_model_id)
+  - Repo (repo_path or repo_id)
+  - Serving Endpoint (serving_endpoint_id)
+  - SQL Alert (sql_alert_id)
+  - SQL Dashboard (sql_dashboard_id)
+  - SQL Endpoint/Warehouse (sql_endpoint_id)
+  - SQL Query (sql_query_id)
+  - Token (authorization = "tokens")
+
+Provider requirement:
+  - Workspace-level Databricks provider
+
+Key difference from other modules:
+  - Role Assignment: "Can this principal access this workspace?" (account-level)
+  - Entitlements: "What capabilities does this principal have?" (workspace-level)
+  - Permissions: "What can this principal do with this object?" (THIS MODULE)
+
+Related modules:
+  - workspace-group: creates the groups
+  - workspace-group-member: assigns users to groups
+  - workspace-role-assignment: assigns groups to workspace (USER/ADMIN)
+  - workspace-entitlements: manages workspace capabilities per group

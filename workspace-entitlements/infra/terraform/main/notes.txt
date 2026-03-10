@@ -1,0 +1,29 @@
+Workspace Entitlements Module - Notes
+======================================
+
+This module manages workspace-level capabilities for principals.
+
+Supported entitlements:
+  - workspace_access: can access the workspace UI
+  - databricks_sql_access: can use Databricks SQL features
+  - allow_cluster_create: can create new clusters
+  - allow_instance_pool_create: can create instance pools
+
+Two assignment modes:
+  1. Name-based: provide group_names_for_entitlements + named_group_entitlements
+     (uses data sources to resolve group IDs automatically)
+  2. Direct ID-based: provide direct_group_entitlements with explicit group_id
+
+Provider requirement:
+  - Workspace-level Databricks provider
+
+Key difference from other modules:
+  - Role Assignment: "Can this principal access this workspace?" (account-level)
+  - Entitlements: "What capabilities does this principal have?" (THIS MODULE)
+  - Permissions: "What can this principal do with this object?" (object-level)
+
+Related modules:
+  - workspace-group: creates the groups
+  - workspace-group-member: assigns users to groups
+  - workspace-role-assignment: assigns groups to workspace (USER/ADMIN)
+  - workspace-permissions: manages object-level permissions per group

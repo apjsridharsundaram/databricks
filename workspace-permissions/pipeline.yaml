@@ -1,0 +1,58 @@
+# =============================================================================
+# CI/CD Pipeline - workspace-permissions
+# =============================================================================
+
+name: workspace-permissions
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - workspace-permissions/**
+      - databricks-all-modules-main/modules/workspace-permissions/**
+
+stages:
+  - stage: validate
+    displayName: "Terraform Validate"
+    jobs:
+      - job: fmt_check
+        displayName: "Terraform Format Check"
+        steps:
+          - script: terraform fmt -check -recursive workspace-permissions/infra/terraform/main
+
+      - job: validate
+        displayName: "Terraform Validate"
+        steps:
+          - script: |
+              cd workspace-permissions/infra/terraform/main
+              terraform init -backend=false
+              terraform validate
+
+  - stage: test
+    displayName: "Terratest"
+    dependsOn: validate
+    condition: succeeded()
+    jobs:
+      - job: terratest
+        displayName: "Run Terratest"
+        steps:
+          - script: |
+              cd workspace-permissions/test/terratest/workspace-permissions
+              chmod +x test.sh
+              ./test.sh
+
+  - stage: plan
+    displayName: "Terraform Plan"
+    dependsOn: test
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: plan
+        displayName: "Terraform Plan"
+        steps:
+          - script: |
+              cd workspace-permissions/infra/terraform/main
+              terraform init
+              terraform plan -out=tfplan
